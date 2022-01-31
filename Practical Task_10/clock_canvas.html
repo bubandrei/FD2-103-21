@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>clock_canvas</title>
+</head>
+
+<body>
+    <div id="clockbox">
+        <canvas id="clock"></canvas>
+    </div>
+    <script>
+        let width = 600;
+        let height = width;
+        let radius = width / 2.5;
+        var oClock = document.getElementById("clock");
+        oClock.width = width;
+        oClock.height = height;
+        let div = document.createElement("span");
+        function myClock() {
+            var ctx = oClock.getContext("2d");
+            var myDate = new Date();
+            var hours = myDate.getHours();
+            var minutes = myDate.getMinutes();
+            var sec = myDate.getSeconds();
+            hours = (hours % 12) + minutes / 60 + sec / 3600;
+            minutes = minutes + sec / 60;
+            ctx.clearRect(0, 0, width, width);
+
+            ctx.beginPath();
+            ctx.arc(width / 2, height / 2, radius, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.lineWidth = 8;
+            ctx.strokeStyle = "lightskyblue";
+            ctx.shadowColor = "gray";
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 1;
+            ctx.stroke();
+
+            for (var i = 0; i < 60; i++) {
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.rotate((i * 6 * Math.PI) / 180);
+                ctx.beginPath();
+                ctx.moveTo(0, -width / 2.7);
+                ctx.lineTo(0, -width / 3);
+                ctx.closePath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "black";
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            for (var i = 0; i < 12; i++) {
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.rotate((i * 30 * Math.PI) / 180);
+                ctx.beginPath();
+                ctx.moveTo(0, -width / 2.6);
+                ctx.lineTo(0, -width / 3);
+                ctx.closePath();
+                ctx.lineWidth = 6;
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            ctx.save();
+            ctx.translate(width / 2, height / 2);
+            ctx.rotate((hours * 30 * Math.PI) / 180);
+            ctx.beginPath();
+            ctx.moveTo(0, 15);
+            ctx.lineTo(0, -width / 5);
+            ctx.closePath();
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = "black";
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(width / 2, height / 2);
+            ctx.rotate((minutes * 6 * Math.PI) / 180);
+            ctx.beginPath();
+            ctx.moveTo(0, 20);
+            ctx.lineTo(0, -width / 3.5);
+            ctx.closePath();
+            ctx.lineWidth = 8;
+            ctx.strokeStyle = "black";
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(width / 2, height / 2);
+            ctx.rotate((sec * 6 * Math.PI) / 180);
+            ctx.beginPath();
+            ctx.moveTo(0, 30);
+            ctx.lineTo(0, -width / 3.1);
+            ctx.closePath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "red";
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.restore();
+
+            function digitalClock() {
+                let now = new Date();
+                let seconds = now.getSeconds();
+                let minutes = now.getMinutes();
+                let hours = now.getHours();
+                if (seconds < 10) {
+                    seconds = "0" + seconds;
+                }
+                if (minutes < 10) {
+                    minutes = "0" + minutes;
+                }
+                if (hours < 10) {
+                    hours = "0" + hours;
+                }
+                div = hours + ":" + minutes + ":" + seconds;
+            }
+            digitalClock();
+            ctx.strokeStyle = "red";
+            ctx.font = "italic 30px Arial";
+            ctx.fillText(div, width / 2.5, height / 3);
+        }
+
+        myClock();
+        setInterval(myClock, 1000);
+
+    </script>
+</body>
+
+</html>

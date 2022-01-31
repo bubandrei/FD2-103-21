@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>storage</title>
+    <style>
+        body {
+            background: linear-gradient(45deg, rgb(124, 155, 231), rgb(172, 182, 82));
+            text-align: center;
+            font-size: 30px;
+            margin-top: 30px;
+        }
+
+        .wrap {
+            position: absolute;
+            min-width: 400px;
+            border-radius: 10px;
+            aspect-ratio: 2;
+            left: 20%;
+            top: 20%;
+            padding: 30px;
+            background-color: ivory;
+            box-shadow: 21px 10px 18px 0px rgba(87, 103, 17, 0.41);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .inputText {
+            display: flex;
+            justify-content: space-between;
+            line-height: 35px;
+            padding-bottom: 10px;
+        }
+
+        .btnBottom {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+            height: 40px;
+        }
+
+        .btnShow {
+            width: 100px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="name"></div>
+    <div id="countdown"></div>
+    <div class="wave"></div>
+    <form action="">
+        <div class="wrap" id="wrap">
+            <h2>Введите данные</h2>
+            <div>
+                <div class="inputText">
+                    <label for="name">Ваше имя:</label>
+                    <input required class="input__default" type="text" id="nameInput">
+                </div>
+                <div class="inputText">
+                    <label for="data">Введите дату вашего рождения</label>
+                    <input id='bithInput' name="data" type="date">
+                </div>
+            </div>
+            <div class="btnBottom">
+                <button id="btnShow" class="btnShow" title="Показать">Показать</button>
+            </div>
+        </div>
+    </form>
+    <script>
+        const wrap = document.getElementById("wrap");
+        const btnShow = document.getElementById("btnShow");
+        const btnCancel = document.querySelectorAll(".btnCancel");
+        let nameInput = document.getElementById("nameInput");
+        let bithInput = document.getElementById("bithInput");
+        btnShow.disabled = true;
+        let newName = null;
+        let birthday = null;
+        let keyName = null;
+        let userData = {};
+        let nowDay = new Date();
+
+        btnShow.addEventListener("click", start);
+        wrap.addEventListener("input", takeData);
+        if (localStorage.hasOwnProperty("userNameBirth")) {
+            wrap.classList.add("hidden");
+            userData = JSON.parse(localStorage.getItem("userNameBirth"));
+            userData.birthday = new Date(userData.birthday);
+            showCount();
+        }
+        function takeData(e) {
+            e.preventDefault();
+            let nameUser = nameInput.value;
+            let bithUser = bithInput.value;
+            userData.newName = nameUser;
+            userData.birthday = new Date(bithUser);
+            if (nameUser && bithUser) {
+                btnShow.disabled = false;
+            } else {
+                btnShow.disabled = true;
+            }
+            localStorage.setItem("userNameBirth", JSON.stringify(userData));
+        }
+
+        function start() {
+            wrap.classList.add("hidden");
+            showCount();
+        }
+        function showCount() {
+            userData.birthday.setFullYear(nowDay.getFullYear());
+            if (userData.birthday < nowDay) {
+                userData.birthday.setFullYear(nowDay.getFullYear() + 1);
+            }
+            setInterval(function () {
+                let nowDate = new Date().getTime();
+                let timeLeft = userData.birthday - nowDate;
+                let days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                let month = Math.floor(days / 30);
+                let day = days - month * 30;
+                let hours = Math.floor(
+                    (timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                );
+                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                if (month) {
+                    document.getElementById("name").innerHTML =
+                        "Здравствуйте " +
+                        userData.newName +
+                        ", до вашего дня рождения осталось:";
+                    document.getElementById("countdown").innerHTML =
+                        month +
+                        "m " +
+                        day +
+                        "d " +
+                        hours +
+                        "h " +
+                        minutes +
+                        "m " +
+                        seconds +
+                        "s ";
+                } else {
+                    document.getElementById("name").innerHTML =
+                        "Здравствуйте " +
+                        userData.newName +
+                        ", до вашего дня рождения осталось:";
+                    document.getElementById("countdown").innerHTML =
+                        day + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+                }
+            }, 1000);
+        }
+
+    </script>
+</body>
+
+</html>

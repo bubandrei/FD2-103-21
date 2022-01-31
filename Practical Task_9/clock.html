@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>clock</title>
+    <style>
+        .clock {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border: 10px solid lightskyblue;
+            border-radius: 50%;
+            left: 30%;
+            top: 30%;
+            background: whitesmoke;
+            box-shadow: inset 0px 0px 10px black;
+        }
+
+        .dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: lightskyblue;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+        }
+
+        .arrow {
+            position: absolute;
+            top: calc(50% - 2.5px);
+            left: calc(0 - 2.5px);
+            transform: rotate(90deg);
+            transform-origin: 100%;
+        }
+
+        .hourArrow {
+            width: 30%;
+            left: 20%;
+            background: lightskyblue;
+            height: 8px;
+            z-index: 1;
+            top: calc(50% - 4px);
+        }
+
+        .minArrow {
+            width: 40%;
+            left: 10%;
+            background: lightskyblue;
+            height: 4px;
+            z-index: 2;
+        }
+
+        .secondArrow {
+            width: 45%;
+            left: 5%;
+            background: red;
+            height: 2px;
+            z-index: 3;
+        }
+
+        .bar {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            left: 50%;
+            transform: translate(-50%) rotate(0deg);
+            top: -30px;
+            color: black;
+            transform-origin: center 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .num {
+            font-weight: 600;
+            font-size: 25px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="clock">
+        <div id="clock" class="dot"></div>
+        <div class="arrow secondArrow"></div>
+        <div class="arrow minArrow"></div>
+        <div class="arrow hourArrow"></div>
+    </div>
+    <script>
+        const clock = document.querySelector(".clock");
+        const hour = document.querySelector(".hourArrow");
+        const minute = document.querySelector(".minArrow");
+        const second = document.querySelector(".secondArrow");
+
+        const setTime = () => {
+            let now = new Date();
+
+            const seconds = now.getSeconds();
+            let degSeconds = (seconds / 60) * 360 + 90;
+            second.style.transform = `rotate(${degSeconds}deg)`;
+
+            const minutes = now.getMinutes();
+            let degMinutes = (minutes / 60) * 360 + 90;
+            minute.style.transform = `rotate(${degMinutes}deg)`;
+
+            const hours = now.getHours();
+            let degHours = (now.getHours() % 12) * 30 + 90 + minutes * 0.5;
+            hour.style.transform = `rotate(${degHours}deg)`;
+        };
+
+        setInterval(setTime, 1000);
+
+        for (let i = 1; i <= 12; i++) {
+            let bar = document.createElement("div");
+            let num = document.createElement("div");
+            bar.className = "bar";
+            num.className = "num";
+            num.textContent = i;
+            bar.appendChild(num);
+            clock.appendChild(bar);
+            bar.style.cssText = `transform: translateX(-50%) rotate(${i * 30}deg)`;
+            num.style.cssText = `transform: rotate(-${i * 30}deg)`;
+        }
+
+    </script>
+</body>
+
+</html>

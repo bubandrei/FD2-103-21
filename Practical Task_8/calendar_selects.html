@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>calendar_selects</title>
+    <style>
+        #monthContainer {
+            display: inline-block;
+            width: 180px;
+        }
+
+        #wrap {
+            text-align: center;
+            width: 400px;
+            margin-left: 8%;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(7, 60px);
+            border: 1px solid white;
+        }
+
+        .empty {
+            background-color: rgb(239, 239, 239);
+        }
+
+        .weekDay {
+            text-align: center;
+            background-color: coral;
+            border: 1px solid white;
+        }
+
+        .end {
+            background-color: red;
+        }
+
+        .colorDay {
+            background: lightgray;
+            border: 1px solid white;
+            text-align: center;
+        }
+
+        .colorDay:hover {
+            background: gray;
+            color: white;
+        }
+
+        .nameMonth {
+            background-color: rgb(239, 239, 239);
+            width: 419px;
+            border: 1px solid lightgray;
+        }
+
+        .month {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .colorWeekend {
+            background: blue;
+            border: 1px solid white;
+            text-align: center;
+        }
+
+        .highlight {
+            background: gray;
+            color: white;
+        }
+
+        .chooseSelect {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <select id="monthSelect" onchange="showData()">
+        <option>Выберите месяц</option>
+    </select>
+    <select id="yearSelect" onchange="showData()">
+        <option>Выберите год</option>
+    </select>
+    <button id="creatCalendar">Создать календарь</button>
+    <button id="removeCalendar">Удалить календарь</button>
+    <div id="wrap"></div>
+    <script>
+        const wrap = document.getElementById("wrap");
+        const monthSelect = document.getElementById("monthSelect");
+        const yearSelect = document.getElementById("yearSelect");
+        const creatCalendar = document.getElementById("creatCalendar");
+        const removeBtn = document.getElementById("removeCalendar");
+        const calendar = document.querySelectorAll(".creatCalendar");
+        const arrYear = [];
+        let date = new Date();
+        const months = [
+            "Январь",
+            "Февраль",
+            "Март",
+            "Апрель",
+            "Май",
+            "Июнь",
+            "Июль",
+            "Август",
+            "Сентябрь",
+            "Октябрь",
+            "Ноябрь",
+            "Декабрь"
+        ];
+        creatCalendar.setAttribute("disabled", true);
+        removeBtn.setAttribute("disabled", true);
+        function showData() {
+            if (
+                monthSelect.value != "Выберите месяц" &&
+                yearSelect.value != "Выберите год"
+            ) {
+                creatCalendar.removeAttribute("disabled");
+            } else {
+                creatCalendar.setAttribute("disabled", true);
+            }
+        }
+        for (let i = 0; i < months.length; i++) {
+            let optionMonth = months[i];
+            let elMonth = document.createElement("option");
+            elMonth.text = optionMonth;
+            elMonth.value = optionMonth;
+            monthSelect.appendChild(elMonth);
+        }
+        for (let i = 1980; i <= 2040; i++) {
+            arrYear.push(i);
+        }
+        for (let i = 0; i < arrYear.length; i++) {
+            let optionYear = arrYear[i];
+            let elYear = document.createElement("option");
+            elYear.text = optionYear;
+            elYear.value = optionYear;
+            yearSelect.appendChild(elYear);
+        }
+        creatCalendar.addEventListener("click", (event) => {
+            event.preventDefault();
+            let newWrap = document.createElement("p");
+            let newCaleandar = document.createElement("div");
+            let newCount = document.createElement("div");
+            let monthContainer = document.createElement("div");
+            let html = "";
+            let chooseMonth = monthSelect.options.selectedIndex - 1;
+            date.setMonth(chooseMonth);
+            let chooseYear = yearSelect.options[yearSelect.selectedIndex];
+            let numberYear = chooseYear.text;
+            date.setFullYear(numberYear);
+            const btnMonthCreate = `<button class="goToPreviousYear"><< </button>
+                      <button class="goToPrevious">< </button>
+                      <div class="empty"></div>
+                      <div class="empty"></div>
+                      <div class="empty"></div>
+                      <button class="goToNext"> ></button>
+                      <button class="goToNextYear">>></button></div>
+                      <div class="weekDay">Пн</div>
+                      <div class="weekDay">Вт</div>
+                      <div class="weekDay">Ср</div>
+                      <div class="weekDay">Чт</div>
+                      <div class="weekDay">Пт</div>
+                      <div class="weekDay end">Сб</div>
+                      <div class="weekDay end">Вс</div>
+                      `;
+            generateCalendar(date);
+            function generateCalendar(date) {
+                const fullYear = date.getFullYear();
+                const month = date.getMonth();
+                const daysInMonth = getDaysInMonth(fullYear, month);
+                html += generateEmptySpace(fullYear, month);
+                for (let i = 1; i <= daysInMonth; i++) {
+                    html += `<div class="colorDay">${i}</div>`;
+                }
+                newCaleandar.className = "grid";
+                newCaleandar.innerHTML = btnMonthCreate;
+                newWrap.append(newCaleandar);
+                newCount.className = "grid";
+                newCount.innerHTML = html;
+                newWrap.append(newCount);
+                generateMonth(date);
+            }
+            function recoverCalendar(date) {
+                let newHtml = "";
+                const fullYear = date.getFullYear();
+                const month = date.getMonth();
+                const daysInMonth = getDaysInMonth(fullYear, month);
+                newHtml += generateEmptySpace(fullYear, month);
+                for (let i = 1; i <= daysInMonth; i++) {
+                    newHtml += `<div class="colorDay">${i}</div>`;
+                }
+                newCount.innerHTML = newHtml;
+                generateMonth(date);
+            }
+            function generateEmptySpace(year, month) {
+                const date = new Date(year, month);
+                const dateIndex = date.getDay();
+                let html = "";
+                for (let i = 1; i < dateIndex; i++) {
+                    html += `<div></div>`;
+                }
+                return html;
+            }
+            function getDaysInMonth(year, month) {
+                const firstDay = new Date(year, month);
+                const firstDayInNextMonth = new Date(year, month + 1);
+                const diff = firstDayInNextMonth - firstDay;
+                return diff / (1000 * 60 * 60 * 24);
+            }
+            function generateMonth(date) {
+                const month = months[date.getMonth()];
+                let insertMonth = "";
+                insertMonth = `${month} ${date.getFullYear()} года`;
+                monthContainer.className = "nameMonth";
+                monthContainer.innerHTML = insertMonth;
+                newWrap.prepend(monthContainer);
+            }
+            newWrap.addEventListener("click", (event) => {
+                if (event.target.className === "goToPreviousYear") {
+                    date.setFullYear(date.getFullYear() - 1);
+                    recoverCalendar(date);
+                }
+                if (event.target.className === "goToPrevious") {
+                    date.setMonth(date.getMonth() - 1);
+                    recoverCalendar(date);
+                }
+                if (event.target.className === "goToNext") {
+                    date.setMonth(date.getMonth() + 1);
+                    recoverCalendar(date);
+                }
+                if (event.target.className === "goToNextYear") {
+                    date.setFullYear(date.getFullYear() + 1);
+                    recoverCalendar(date);
+                }
+            });
+            wrap.append(newWrap);
+            if (wrap.hasChildNodes()) {
+                removeBtn.removeAttribute("disabled");
+            }
+            removeBtn.onclick = function () {
+                wrap.firstChild.remove();
+                if (!wrap.hasChildNodes()) {
+                    removeBtn.setAttribute("disabled", true);
+                }
+            };
+            let selectedDay;
+            newWrap.onclick = function (event) {
+                let dateDay = event.target.closest(".colorDay");
+                if (!dateDay) return;
+                if (!newWrap.contains(dateDay)) return;
+                highlight(dateDay);
+            };
+            function highlight(dateDay) {
+                if (selectedDay) {
+                    selectedDay.classList.remove("highlight");
+                }
+                selectedDay = dateDay;
+                selectedDay.classList.add("highlight");
+            }
+        });
+
+    </script>
+</body>
+
+</html>

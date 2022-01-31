@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ping-pong_SVG</title>
+</head>
+
+<body>
+    <button id="button" style="display: block; width: 60px; aspect-ratio: 1;">START</button>
+    <script>
+        const btn = document.getElementById("button");
+        const svgNS = "http://www.w3.org/2000/svg";
+        const widthField = 1000;
+        const heigthField = 500;
+        let interval;
+        var leftRacketTop = false;
+        var leftRacketBottom = false;
+        var rightRacketTop = false;
+        var rightRacketBottom = false;
+        const svgG = document.createElementNS(svgNS, "svg");
+        svgG.setAttributeNS(null, "width", widthField);
+        svgG.setAttributeNS(null, "height", heigthField);
+        svgG.setAttributeNS(null, "id", "pinpongSvg");
+        svgG.style.margin = "auto";
+        document.body.append(svgG);
+
+        let widthRacket = widthField / 65;
+        let heigthRacket = heigthField / 5;
+
+        let rectField = document.createElementNS(svgNS, "rect");
+        let ball = document.createElementNS(svgNS, "circle");
+        let leftRacket = document.createElementNS(svgNS, "rect");
+        let rightRacket = document.createElementNS(svgNS, "rect");
+        let text = document.createElementNS(svgNS, "text");
+        let count = document.createElementNS(svgNS, "text");
+
+        const svg = document.getElementById("pinpongSvg");
+        const w = parseFloat(svg.getAttributeNS(null, "width"));
+        const h = parseFloat(svg.getAttributeNS(null, "height"));
+
+        let rightY = h / 3;
+        let leftY = h / 3;
+        let radiusBall = 5;
+        let cX = w / 2;
+        let cY = h / 2.2;
+        let dx = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2);
+        let dy = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2);
+        var scoreLeft = 0;
+        var scoreRight = 0;
+
+        rectField.setAttributeNS(null, "x", "0");
+        rectField.setAttributeNS(null, "y", "0");
+        rectField.setAttributeNS(null, "width", widthField);
+        rectField.setAttributeNS(null, "height", heigthField);
+        rectField.setAttributeNS(null, "stroke", "blue");
+        rectField.setAttributeNS(null, "stroke-width", "2");
+        rectField.setAttributeNS(null, "fill", "yellow");
+        svg.append(rectField);
+
+        ball.setAttributeNS(null, "cx", cX);
+        ball.setAttributeNS(null, "cy", cY);
+        ball.setAttributeNS(null, "r", radiusBall);
+        ball.setAttributeNS(null, "fill", "red");
+        svg.append(ball);
+
+        leftRacket.setAttributeNS(null, "x", "0");
+        leftRacket.setAttributeNS(null, "y", leftY);
+        leftRacket.setAttributeNS(null, "width", widthRacket);
+        leftRacket.setAttributeNS(null, "height", heigthRacket);
+        leftRacket.setAttributeNS(null, "fill", "blue");
+        svg.append(leftRacket);
+
+        rightRacket.setAttributeNS(null, "x", widthField - widthRacket);
+        rightRacket.setAttributeNS(null, "y", rightY);
+        rightRacket.setAttributeNS(null, "width", widthRacket);
+        rightRacket.setAttributeNS(null, "height", heigthRacket);
+        rightRacket.setAttributeNS(null, "fill", "green");
+        svg.append(rightRacket);
+
+        window.addEventListener("keydown", moveRacket, false);
+        window.addEventListener("keyup", stopRacket, false);
+        function moveRacket(e) {
+            if (e.keyCode == 38) {
+                rightRacketTop = true;
+            } else if (e.keyCode == 40) {
+                rightRacketBottom = true;
+            } else if (e.keyCode == 17) {
+                leftRacketTop = true;
+            } else if (e.keyCode == 16) {
+                leftRacketBottom = true;
+            }
+        }
+        function stopRacket(e) {
+            if (e.keyCode == 38) {
+                rightRacketTop = false;
+            } else if (e.keyCode == 40) {
+                rightRacketBottom = false;
+            } else if (e.keyCode == 17) {
+                leftRacketTop = false;
+            } else if (e.keyCode == 16) {
+                leftRacketBottom = false;
+            }
+        }
+
+        function game() {
+            ball.setAttributeNS(null, "cx", cX);
+            ball.setAttributeNS(null, "cy", cY);
+
+            if (cX + dx > widthField - radiusBall) {
+                dx = -dx;
+                scoreRight++;
+                value();
+                if (scoreRight < 5) {
+                    dx = 0;
+                    dy = 0;
+                    setTimeout(start, 4000);
+                    counter();
+                } else {
+                    dx = 0;
+                    dy = 0;
+                }
+            } else if (cX + dx < radiusBall) {
+                dx = -dx;
+                scoreLeft++;
+                value();
+                if (scoreLeft < 5) {
+                    dx = 0;
+                    dy = 0;
+                    setTimeout(start, 4000);
+                    counter();
+                } else {
+                    dx = 0;
+                    dy = 0;
+                }
+            } else if (cY + dy > heigthField - radiusBall || cY + dy < radiusBall) {
+                dy = -dy;
+            } else if (
+                cX + dx > widthField - radiusBall - widthRacket &&
+                cY > rightY &&
+                cY < rightY + heigthRacket
+            ) {
+                dx = -dx;
+            } else if (
+                cX + dx < widthRacket + radiusBall &&
+                cY > leftY &&
+                cY < leftY + heigthRacket
+            ) {
+                dx = -dx;
+            }
+            cX += dx;
+            cY += dy;
+
+            if (rightRacketBottom && rightY < heigthField - heigthRacket) {
+                rightY += 5;
+                rightRacket.setAttributeNS(null, "y", rightY);
+            }
+            if (rightRacketTop && rightY > 0) {
+                rightY -= 5;
+                rightRacket.setAttributeNS(null, "y", rightY);
+            }
+            if (leftRacketTop && leftY < heigthField - heigthRacket) {
+                leftY += 5;
+                leftRacket.setAttributeNS(null, "y", leftY);
+            }
+            if (leftRacketBottom && leftY > 0) {
+                leftY -= 5;
+                leftRacket.setAttributeNS(null, "y", leftY);
+            }
+
+            interval = requestAnimationFrame(game);
+        }
+        function start() {
+            btn.disabled = true;
+            cX = w / 2;
+            cY = h / 2.2;
+            dx = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2);
+            dy = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2);
+            game();
+        }
+        btn.addEventListener("click", start);
+
+        function value() {
+            count.setAttributeNS(null, "x", widthField / 2.1);
+            count.setAttributeNS(null, "y", heigthField - 60);
+            count.setAttributeNS(null, "font-size", 40);
+            count.textContent = `${scoreLeft} : ${scoreRight}`;
+            svgG.append(count);
+        }
+
+        function counter() {
+            var i = 3;
+            var timer = setInterval(function () {
+                text.setAttributeNS(null, "x", widthField / 2);
+                text.setAttributeNS(null, "y", heigthField / 2);
+                text.setAttributeNS(null, "font-size", 65);
+                text.textContent = i;
+                svgG.append(text);
+                cancelAnimationFrame(interval);
+                i--;
+                if (i == -1) {
+                    text.remove();
+                    clearInterval(timer);
+                    start();
+                }
+            }, 1000);
+        }
+
+    </script>
+</body>
+
+</html>

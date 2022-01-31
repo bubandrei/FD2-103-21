@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>buttons_counter</title>
+    <style>
+        button {
+            width: 40px;
+            height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <button>0</button>
+    <button>0</button>
+    <button>0</button>
+    <button>0</button>
+    <button>0</button>
+    <button>0</button>
+    <script>
+        let btn = document.querySelectorAll("button");
+        for (let i = 0; i < btn.length; i++) {
+            let multipleCounter = counter();
+            btn[i].onclick = function () {
+                btn[i].innerText = multipleCounter();
+            };
+            function counter() {
+                let count = 1;
+                return function () {
+                    return count++;
+                };
+            }
+        }
+
+    </script>
+</body>
+
+</html>

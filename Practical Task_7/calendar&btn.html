@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>calendar&btn</title>
+    <style>
+        button {
+            width: 60px;
+        }
+
+        #monthContainer {
+            display: inline-block;
+            width: 180px;
+        }
+
+        #wrap {
+            text-align: center;
+            width: 400px;
+            margin: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            border: 1px solid white;
+        }
+
+        .weekDay {
+            text-align: center;
+            background-color: coral;
+            border: 1px solid white;
+        }
+
+        .end {
+            background-color: red;
+        }
+
+        .colorDay {
+            background: lightgray;
+            border: 1px solid white;
+            text-align: center;
+        }
+
+        .colorDay:hover {
+            background: gray;
+            color: white;
+        }
+
+        .month {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .colorWeekend {
+            background: blue;
+            border: 1px solid white;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrap">
+        <div class="month">
+            <button onclick="goToPreviousYear()">
+                << </button>
+                    <button onclick="goToPrevious()">
+                        < </button>
+                            <div id="monthContainer"></div>
+                            <button onclick="goToNext()"> ></button>
+                            <button onclick="goToNextYear()">>></button>
+        </div>
+        <div class="calendar">
+            <div class="grid">
+                <div class="weekDay">Пн</div>
+                <div class="weekDay">Вт</div>
+                <div class="weekDay">Ср</div>
+                <div class="weekDay">Чт</div>
+                <div class="weekDay">Пт</div>
+                <div class="weekDay end">Сб</div>
+                <div class="weekDay end">Вс</div>
+            </div>
+            <div id="calendar" class="grid">
+            </div>
+        </div>
+    </div>
+    <script>
+        const wrap = document.getElementById("wrap");
+        const calendar = document.getElementById("calendar");
+        const monthContainer = document.getElementById("monthContainer");
+        let date = new Date();
+        const months = [
+            "Январь",
+            "Февраль",
+            "Март",
+            "Апрель",
+            "Май",
+            "Июнь",
+            "Июль",
+            "Август",
+            "Сентябрь",
+            "Октябрь",
+            "Ноябрь",
+            "Декабрь"
+        ];
+
+        generateCalendar(date);
+
+        function goToNext() {
+            date.setMonth(date.getMonth() + 1);
+            generateCalendar(date);
+        }
+        function goToPrevious() {
+            date.setMonth(date.getMonth() - 1);
+            generateCalendar(date);
+        }
+        function goToNextYear() {
+            date.setFullYear(date.getFullYear() + 1);
+            generateCalendar(date);
+        }
+        function goToPreviousYear() {
+            date.setFullYear(date.getFullYear() - 1);
+            generateCalendar(date);
+        }
+
+        function generateCalendar(date) {
+            const fullYear = date.getFullYear();
+            const month = date.getMonth();
+            const daysInMonth = getDaysInMonth(fullYear, month);
+            let html = "";
+            html += generateEmptySpace(fullYear, month);
+            for (let i = 1; i <= daysInMonth; i++) {
+                html += `<div class="colorDay">${i}</div>`;
+            }
+            calendar.innerHTML = html;
+            generateMonth(date);
+        }
+
+        function generateEmptySpace(year, month) {
+            const date = new Date(year, month);
+            const dateIndex = date.getDay();
+            let html = "";
+            for (let i = 1; i < dateIndex; i++) {
+                html += `<div></div>`;
+            }
+            return html;
+        }
+
+        function getDaysInMonth(year, month) {
+            const firstDay = new Date(year, month);
+            const firstDayInNextMonth = new Date(year, month + 1);
+            const diff = firstDayInNextMonth - firstDay;
+            return diff / (1000 * 60 * 60 * 24);
+        }
+
+        function generateMonth(date) {
+            const month = months[date.getMonth()];
+            monthContainer.innerHTML = `${month} ${date.getFullYear()} года`;
+        }
+
+    </script>
+</body>
+
+</html>

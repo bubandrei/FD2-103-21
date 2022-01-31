@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CalcMVC</title>
+    <style>
+        body {
+            font-size: 21px;
+            text-align: center;
+        }
+
+        input {
+            min-width: 180px;
+            padding: 8px 12px;
+            border: 1px gray solid;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+
+        select {
+            min-width: 60px;
+            padding: 8px 12px;
+            border: 1px gray solid;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+
+        button {
+            font-size: 18px;
+            line-height: 21px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Пример решения MVC</h1>
+    <h3>пример калькулятора</h3>
+    <form>
+        <fieldset>
+            <legend>Магия чисел</legend>
+            <p>
+                <input type="number" placeholder="Введите первое значение" name="input_1" id="input_1">
+                <select type="number" name="select" id="selectId">
+                    <option>+</option>
+                    <option>-</option>
+                    <option>*</option>
+                    <option>/</option>
+                </select>
+                <input type="number" placeholder="Введите второе значение" name="input_2" id="input_2">
+            </p>
+            <p>
+                <button id="calculate-btn">Вычислить</button>
+            </p>
+            <div id="show-result"></div>
+        </fieldset>
+    </form>
+    <script>
+        let button = document.querySelector("#calculate-btn");
+        let input1 = document.querySelector("#input_1");
+        let input2 = document.querySelector("#input_2");
+        let select = document.querySelector("#selectId");
+        let form = document.querySelector("form");
+        button.disabled = true;
+        //model
+        const operationObject = {
+            num1: "",
+            num2: "",
+            operation: "",
+            result: "",
+            updateValues: function () {
+                this.num1 = input1.value;
+                this.num2 = input2.value;
+                this.operation = select.value;
+                this.buttonListener();
+            },
+            calculation: function () {
+                switch (this.operation) {
+                    case "+":
+                        this.result = `Результат вычислений = ${Number(this.num1) + Number(this.num2)
+                            }`;
+                        break;
+                    case "-":
+                        this.result = `Результат вычислений = ${this.num1 - this.num2}`;
+                        break;
+                    case "*":
+                        this.result = `Результат вычислений = ${this.num1 * this.num2}`;
+                        break;
+                    case "/":
+                        if (Number(this.num2)) {
+                            this.result = `Результат вычислений = ${this.num1 / this.num2}`;
+                        } else {
+                            this.result = `На ноль делить нельзя!`;
+                        }
+                        break;
+                }
+                this.updateView();
+            },
+            updateView: function () {
+                viewUpdate.update(this.result);
+            },
+            buttonListener: function () {
+                if (this.num1 && this.num2) {
+                    button.disabled = false;
+                } else {
+                    button.disabled = true;
+                    viewUpdate.update("");
+                }
+            }
+        };
+        //view
+        const viewUpdate = {
+            update: function (x) {
+                document.getElementById("show-result").innerHTML = x;
+            }
+        };
+        //controller
+        const controller = {
+            addListeners: function () {
+                input1.addEventListener("blur", function () {
+                    operationObject.updateValues();
+                });
+                input2.addEventListener("blur", function () {
+                    operationObject.updateValues();
+                });
+                button.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    operationObject.calculation();
+                });
+            }
+        };
+        controller.addListeners();
+
+    </script>
+</body>
+
+</html>

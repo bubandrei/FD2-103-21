@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ping-pong_CANVAS</title>
+    <style>
+        canvas {
+            background: #ffff99;
+            margin: 3% 5%;
+        }
+
+        button {
+            width: 60px;
+            position: absolute;
+            margin: 0 5%;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="btn" onclick='start()'>Start</button>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const field = document.body.querySelector("#gameCanvas");
+        const ctx = field.getContext("2d");
+        const btn = document.getElementById("btn");
+        var width = 400;
+        var height = 300;
+        var x = 0;
+        var x1 = width / 2;
+        var y1 = height / 2;
+        var dx = Math.random() * (2 - 1) + 1;
+        var dy = Math.random() * (2 - 1) + 1;
+        var ballRadius = 4;
+        var scoreLeft = 0;
+        var scoreRight = 0;
+        var leftRacketTop = false;
+        var leftRacketBottom = false;
+        var rightRacketTop = false;
+        var rightRacketBottom = false;
+        var interval;
+
+        var racketL = {
+            x1: 0,
+            y1: height / 2,
+            x2: 5,
+            y2: 60
+        };
+        var racketR = {
+            x1: width - 5,
+            y1: height / 2,
+            x2: 5,
+            y2: 60
+        };
+        field.width = width;
+        field.height = height;
+        function start() {
+            btn.disabled = true;
+            cancelAnimationFrame(interval);
+            x1 = field.width / 2;
+            y1 = field.height / 2;
+            dx = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2);
+            dy = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2);
+            draw();
+        }
+
+        window.addEventListener("keydown", moveRacket, false);
+        window.addEventListener("keyup", stopRacket, false);
+        function moveRacket(e) {
+            if (e.keyCode == 38) {
+                rightRacketTop = true;
+            } else if (e.keyCode == 40) {
+                rightRacketBottom = true;
+            } else if (e.keyCode == 17) {
+                leftRacketTop = true;
+            } else if (e.keyCode == 16) {
+                leftRacketBottom = true;
+            }
+        }
+        function stopRacket(e) {
+            if (e.keyCode == 38) {
+                rightRacketTop = false;
+            } else if (e.keyCode == 40) {
+                rightRacketBottom = false;
+            } else if (e.keyCode == 17) {
+                leftRacketTop = false;
+            } else if (e.keyCode == 16) {
+                leftRacketBottom = false;
+            }
+        }
+        function DrawBall() {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x1, y1, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.closePath();
+        }
+        function draw() {
+            ctx.clearRect(0, 0, field.width, field.height);
+            DrawBall();
+            drawScore();
+            if (x1 + dx < racketL.x2) {
+                if (y1 > racketL.y1 && y1 < racketL.y1 + racketL.y2) {
+                    dx = -dx;
+                } else if (x1 + dx < ballRadius) {
+                    dx = -dx;
+                    scoreLeft++;
+                    if (scoreLeft < 5) {
+                        dx = 0;
+                        dy = 0;
+                        setTimeout(start, 4000);
+                        counter();
+                    } else {
+                        dx = 0;
+                        dy = 0;
+                    }
+                }
+            }
+            if (x1 + dx > field.width - ballRadius) {
+                dx = -dx;
+                scoreRight++;
+                if (scoreRight < 5) {
+                    dx = 0;
+                    dy = 0;
+                    setTimeout(start, 4000);
+                    counter();
+                } else {
+                    dx = 0;
+                    dy = 0;
+                }
+            } else if (
+                x1 + dx > field.width - racketR.x2 &&
+                y1 > racketR.y1 &&
+                y1 < racketR.y1 + racketR.y2
+            ) {
+                dx = -dx;
+            }
+            if (y1 + dy > field.height - ballRadius || y1 + dy < ballRadius) {
+                dy = -dy;
+            }
+            if (rightRacketBottom && racketR.y1 < 240) {
+                racketR.y1 += 5;
+            }
+            if (rightRacketTop && racketR.y1 > 0) {
+                racketR.y1 -= 5;
+            }
+            if (leftRacketTop && racketL.y1 < 240) {
+                racketL.y1 += 5;
+            }
+            if (leftRacketBottom && racketL.y1 > 0) {
+                racketL.y1 -= 5;
+            }
+            x1 += dx;
+            y1 += dy;
+            ctx.fillStyle = "green";
+            ctx.fillRect(racketL.x1, racketL.y1, racketL.x2, racketL.y2);
+            ctx.fillRect(racketR.x1, racketR.y1, racketR.x2, racketR.y2);
+            ctx.restore();
+            interval = requestAnimationFrame(draw);
+        }
+        function drawScore() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText("Score: " + scoreLeft, 8, 20);
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText("Score: " + scoreRight, 320, 20);
+        }
+        function counter() {
+            var i = 3;
+            var timer = setInterval(function () {
+                ctx.clearRect(0, 0, field.width, field.height);
+                ctx.font = "50px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText(i, field.width / 2 - 16, field.height / 2 - 16);
+                cancelAnimationFrame(interval);
+                i--;
+                if (i == -1) {
+                    clearInterval(timer);
+                    start();
+                }
+            }, 1000);
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        a {
+            display: block;
+            line-height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="http://it-academy.by" title="Запишись на курсы" target="_blank">it-academy</a>
+    <a href="https://www.monterosa.co/" title="You're in great company" target="_blank">Monterosa</a>
+    <a href="https://careers.epam.by/" title="Присоединяйтесь к глобальной команде профессионалов"
+        target="_blank">EPAM</a>
+    <a href="http://google.com" title="Американская транснациональная корпорация" target="_blank">Google</a>
+    <a href="http://onliner.by" title="Нажмите на ссылку и вы перейдете на сайт" target="_blank">onliner.by</a>
+    <script>
+        let linkAll = document.querySelectorAll("a");
+        let arr = [];
+        for (let i = 0; i < linkAll.length; i++) {
+            arr.push(linkAll[i].innerHTML);
+            linkAll[i].addEventListener("mouseover", showNewText);
+            linkAll[i].addEventListener("mouseout", showOldText);
+        }
+        function showNewText() {
+            this.innerHTML = `${this.title} (${this.href})`;
+        }
+        function showOldText() {
+            for (let i = 0; i < linkAll.length; i++) {
+                linkAll[i].innerHTML = arr[i];
+            }
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>calendar</title>
+    <style>
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="monthContainer"></div>
+    <div class="calendar">
+        <div class="grid">
+            <div>Пн</div>
+            <div>Вт</div>
+            <div>Ср</div>
+            <div>Чт</div>
+            <div>Пт</div>
+            <div>Сб</div>
+            <div>Вс</div>
+        </div>
+        <div id="calendar" class="grid">
+        </div>
+    </div>
+    <script>
+        const months = [
+            "Январь",
+            "Февраль",
+            "Март",
+            "Апрель",
+            "Май",
+            "Июнь",
+            "Июль",
+            "Август",
+            "Сентябрь",
+            "Октябрь",
+            "Ноябрь",
+            "Декабрь"
+        ];
+        const calendar = document.getElementById("calendar");
+        const monthContainer = document.getElementById("monthContainer");
+        let date = new Date(prompt("Введите год"), prompt("Введите месяц"));
+        generateCalendar(date);
+
+        function generateCalendar(date) {
+            const fullYear = date.getFullYear();
+            const month = date.getMonth() - 1;
+            const daysInMonth = getDaysInMonth(fullYear, month);
+            let html = "";
+            html += generateEmptySpace(fullYear, month);
+            for (let i = 1; i <= daysInMonth; i++) {
+                html += `<div>${i}</div>`;
+            }
+            calendar.innerHTML = html;
+            generateMonth(date);
+        }
+
+        function generateEmptySpace(year, month) {
+            const date = new Date(year, month);
+            const dateIndex = date.getDay();
+            let html = "";
+            for (let i = 1; i < dateIndex; i++) {
+                html += `<div></div>`;
+            }
+            return html;
+        }
+
+        function getDaysInMonth(year, month) {
+            const firstDay = new Date(year, month);
+            const firstDayInNextMonth = new Date(year, month + 1);
+            const diff = firstDayInNextMonth - firstDay;
+            return diff / (1000 * 60 * 60 * 24);
+        }
+
+        function generateMonth(date) {
+            const month = months[date.getMonth() - 1];
+            monthContainer.innerHTML = `${month} ${date.getFullYear()}`;
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Month</title>
+</head>
+
+<body>
+    <script>
+        let month = +prompt('Please, enter number of month');
+
+        if (month > 2 && month < 6) {
+            console.log(`Spring`);
+        } else if (month > 5 && month < 9) {
+            console.log(`Summer`);
+        } else if (month > 8 && month < 12) {
+            console.log(`Autumn`);
+        } else if (month === 12 || month > 0 && month < 3) {
+            console.log(`Winter`);
+        } else {
+            alert(`Only 12 months in a year`);
+        }
+
+    </script>
+</body>
+
+</html>

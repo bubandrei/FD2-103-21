@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>editable_list</title>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to top, #66ffff, #0066ff);
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        .container {
+            margin: 100px auto;
+            padding: 30px;
+            width: 350px;
+            background-color: white;
+            border-radius: 5px;
+            font-size: 20px;
+            box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+                0 17px 50px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        .placeInput {
+            height: 40px;
+            display: flex;
+        }
+
+        .addText {
+            width: 100%;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .buttonRemove,
+        .buttonAdd {
+            width: 100px;
+            background-color: cornflowerblue;
+            border: none;
+            font-size: 16px;
+            margin-left: 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.24), 0 5px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <ol class="list">
+        </ol>
+        <div class="placeInput">
+            <input class="addText" type="text" placeholder="Inter value">
+            <button class="buttonAdd">Add</button>
+            <button class="buttonRemove" disabled>Remove</button>
+        </div>
+    </div>
+    <script>
+        const addText = document.querySelector(".buttonAdd");
+        let newList = document.querySelector(".list");
+        const inputText = document.querySelector(".placeInput input");
+        const deleteText = document.querySelector(".buttonRemove");
+        let liLast;
+        let listArr = [];
+
+        addText.onclick = function () {
+            let userData = inputText.value;
+            if (userData) {
+                listArr.push(userData);
+                deleteText.disabled = false;
+                liLast = document.createElement("li");
+                inputText.value = "";
+                liLast.innerHTML = `${userData}`;
+                newList.append(liLast);
+            }
+        };
+        let area = "";
+        newList.onclick = function () {
+            let target = event.target;
+            editStart(target);
+        };
+        function editStart(target) {
+            var text = target.innerText;
+            area = document.createElement("input");
+            area.value = text;
+            target.innerHTML = "";
+            target.append(area);
+            area.focus();
+            area.addEventListener("focusout", function () {
+                finishEdit(target);
+            });
+        }
+        function finishEdit(target) {
+            var text = target.querySelector("input").value;
+            target.innerHTML = text;
+        }
+        deleteText.onclick = function () {
+            if (listArr.length > 0) {
+                listArr = listArr.slice(0, listArr.length - 1);
+                newList.removeChild(newList.lastChild);
+            }
+            if (listArr.length == 0) {
+                deleteText.disabled = true;
+            }
+        };
+
+    </script>
+</body>
+
+</html>

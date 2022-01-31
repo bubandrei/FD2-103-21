@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>clockMVC</title>
+    <style>
+        .clock {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border: 10px solid lightskyblue;
+            border-radius: 50%;
+            /*   left: 30%;
+  top: 30%; */
+            background: whitesmoke;
+            box-shadow: inset 0px 0px 10px black;
+        }
+
+        .dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: lightskyblue;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+        }
+
+        .arrow {
+            position: absolute;
+            top: calc(50% - 2.5px);
+            left: calc(0 - 2.5px);
+            transform: rotate(90deg);
+            transform-origin: 100%;
+        }
+
+        .hourArrow {
+            width: 30%;
+            left: 20%;
+            background: lightskyblue;
+            height: 8px;
+            z-index: 1;
+            top: calc(50% - 4px);
+        }
+
+        .minArrow {
+            width: 40%;
+            left: 10%;
+            background: lightskyblue;
+            height: 4px;
+            z-index: 2;
+        }
+
+        .secondArrow {
+            width: 45%;
+            left: 5%;
+            background: red;
+            height: 2px;
+            z-index: 3;
+        }
+
+        .bar {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            left: 50%;
+            transform: translate(-50%) rotate(0deg);
+            top: -30px;
+            color: black;
+            transform-origin: center 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .num {
+            font-weight: 600;
+            font-size: 25px;
+            line-height: 1.6;
+        }
+
+        .inline {
+            display: flex;
+            padding-left: 100px;
+            margin-bottom: 20px;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="inline">
+        <div id="wrap1">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <div class="clock">
+                <div id="clock" class="dot"></div>
+                <div class="arrow secondArrow"></div>
+                <div class="arrow minArrow"></div>
+                <div class="arrow hourArrow"></div>
+            </div>
+        </div>
+        <div id="wrap2">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <div class="clock">
+                <div id="clock" class="dot"></div>
+                <div class="arrow secondArrow"></div>
+                <div class="arrow minArrow"></div>
+                <div class="arrow hourArrow"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inline">
+        <svg id="svg2" width="500" height="500">
+            <rect x="10" y="10" id="start" width="50" height="20" style="fill: lightgreen;"></rect>
+            <rect x="10" y="40" id="stop" width="50" height="20" style="fill: coral;"></rect>
+        </svg>
+
+        <svg id="svg3" width="500" height="500">
+            <rect x="10" y="10" id="start" width="50" height="20" style="fill: lightgreen;"></rect>
+            <rect x="10" y="40" id="stop" width="50" height="20" style="fill: coral;"></rect>
+        </svg>
+    </div>
+
+    <div class="inline">
+        <div id="clockbox">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <canvas id="clock"></canvas>
+        </div>
+        <div id="clockbox2">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <canvas id="clock"></canvas>
+        </div>
+    </div>
+    <script>
+        function ManViewWebCanvas() {
+            let width = 400;
+            let height = width;
+            let radius = width / 2.5;
+            let oClock = null;
+            let ctx = null;
+            let cityName = null;
+
+            this.init = function (container, city) {
+                myField = container;
+                oClock = myField.querySelector("#clock");
+                cityName = city;
+                console.log(cityName);
+                oClock.width = width;
+                oClock.height = height;
+                this.nameCity(cityName);
+                this.draw();
+            };
+            this.nameCity = function (cityName) {
+                let callNameCity = document.createElement("div");
+                callNameCity.innerHTML = cityName;
+                console.log(callNameCity);
+                myField.append(callNameCity);
+            };
+
+            this.draw = function () {
+                ctx = oClock.getContext("2d");
+                ctx.clearRect(0, 0, width, width);
+
+                ctx.beginPath();
+                ctx.arc(width / 2, height / 2, radius, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.lineWidth = 8;
+                ctx.strokeStyle = "lightskyblue";
+                ctx.shadowColor = "gray";
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 1;
+                ctx.stroke();
+
+                for (var i = 0; i < 60; i++) {
+                    ctx.save();
+                    ctx.translate(width / 2, height / 2);
+                    ctx.rotate((i * 6 * Math.PI) / 180);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -width / 2.7);
+                    ctx.lineTo(0, -width / 3);
+                    ctx.closePath();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "black";
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                for (var i = 0; i < 12; i++) {
+                    ctx.save();
+                    ctx.translate(width / 2, height / 2);
+                    ctx.rotate((i * 30 * Math.PI) / 180);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -width / 2.6);
+                    ctx.lineTo(0, -width / 3);
+                    ctx.closePath();
+                    ctx.lineWidth = 6;
+                    ctx.shadowBlur = 0;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.beginPath();
+                ctx.moveTo(0, 15);
+                ctx.lineTo(0, -width / 5);
+                ctx.closePath();
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = "black";
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.stroke();
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.beginPath();
+                ctx.moveTo(0, 20);
+                ctx.lineTo(0, -width / 3.5);
+                ctx.closePath();
+                ctx.lineWidth = 8;
+                ctx.strokeStyle = "black";
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.stroke();
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.beginPath();
+                ctx.moveTo(0, 30);
+                ctx.lineTo(0, -width / 3.1);
+                ctx.closePath();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(0, 0, 8, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fillStyle = "red";
+                ctx.fill();
+                ctx.restore();
+            };
+
+            this.update = function (degSeconds, degMinutes, degHours) {
+                ctx.clearRect(0, 0, width, width);
+
+                ctx.beginPath();
+                ctx.arc(width / 2, height / 2, radius, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.lineWidth = 8;
+                ctx.strokeStyle = "lightskyblue";
+                ctx.shadowColor = "gray";
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 1;
+                ctx.stroke();
+
+                for (var i = 0; i < 60; i++) {
+                    ctx.save();
+                    ctx.translate(width / 2, height / 2);
+                    ctx.rotate((i * 6 * Math.PI) / 180);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -width / 2.7);
+                    ctx.lineTo(0, -width / 3);
+                    ctx.closePath();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "black";
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                for (var i = 0; i < 12; i++) {
+                    ctx.save();
+                    ctx.translate(width / 2, height / 2);
+                    ctx.rotate((i * 30 * Math.PI) / 180);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -width / 2.6);
+                    ctx.lineTo(0, -width / 3);
+                    ctx.closePath();
+                    ctx.lineWidth = 6;
+                    ctx.shadowBlur = 0;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.rotate((degHours * Math.PI) / 180);
+                ctx.beginPath();
+                ctx.moveTo(0, 15);
+                ctx.lineTo(0, -width / 5);
+                ctx.closePath();
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = "black";
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.stroke();
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.rotate((degMinutes * Math.PI) / 180);
+                ctx.beginPath();
+                ctx.moveTo(0, 20);
+                ctx.lineTo(0, -width / 3.5);
+                ctx.closePath();
+                ctx.lineWidth = 8;
+                ctx.strokeStyle = "black";
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.stroke();
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.rotate((degSeconds * Math.PI) / 180);
+                ctx.beginPath();
+                ctx.moveTo(0, 30);
+                ctx.lineTo(0, -width / 3.1);
+                ctx.closePath();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(0, 0, 8, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fillStyle = "red";
+                ctx.fill();
+                ctx.restore();
+            };
+        }
+
+        function ManViewWebSVG() {
+            let w = 500;
+            let h = 500;
+            let myField = null;
+            let svgNS = null;
+            let circle = null;
+            let lineHour = null;
+            let lineMinute = null;
+            let lineSecond = null;
+            let circleDote = null;
+            let numHours = null;
+            let degree = 30;
+            let currentDegree = 0;
+            let angleRadians = null;
+            let cityName = null;
+            let textStart = null;
+            let textStop = null;
+            let textCity = null;
+
+            this.init = function (container, city) {
+                myField = container;
+                svgNS = "http://www.w3.org/2000/svg";
+                cityName = city;
+                textStart = document.createElementNS(svgNS, "text");
+                textStop = document.createElementNS(svgNS, "text");
+                textCity = document.createElementNS(svgNS, "text");
+                circle = document.createElementNS(svgNS, "circle");
+                lineHour = document.createElementNS(svgNS, "line");
+                lineMinute = document.createElementNS(svgNS, "line");
+                lineSecond = document.createElementNS(svgNS, "line");
+                circleDote = document.createElementNS(svgNS, "circle");
+                numHours = document.createElementNS(svgNS, "text");
+                numHours = document.createElementNS(svgNS, "text");
+                this.nameCity(cityName);
+                this.draw();
+            };
+            this.nameCity = function (cityName) {
+                let callNameCity = document.createElement("div");
+                callNameCity.innerHTML = cityName;
+                console.log(callNameCity);
+                myField.append(callNameCity);
+            };
+            this.draw = function () {
+                for (var i = 1; i <= 12; i++) {
+                    currentDegree += degree;
+                    var circleHours = document.createElementNS(svgNS, "circle");
+                    var angleRadians = (parseFloat(currentDegree) / 180) * Math.PI;
+
+                    circleHours.setAttributeNS(
+                        null,
+                        "cx",
+                        w / 2 + (w / 3.5) * Math.cos(angleRadians)
+                    );
+                    circleHours.setAttributeNS(
+                        null,
+                        "cy",
+                        h / 2 + (h / 3.5) * Math.sin(angleRadians)
+                    );
+                    circleHours.setAttributeNS(null, "r", w > h ? h * 0.02 : w * 0.02);
+                    circleHours.setAttributeNS(null, "fill", "none");
+                    circleHours.setAttributeNS(null, "stroke-width", "4");
+                    circleHours.setAttributeNS(null, "stroke", "lightskyblue");
+
+                    myField.append(circleHours);
+                }
+
+                circle.setAttributeNS(null, "cx", w / 2);
+                circle.setAttributeNS(null, "cy", h / 2);
+                circle.setAttributeNS(null, "r", w > h ? h / 3 : w / 3);
+                circle.setAttributeNS(null, "fill", "none");
+                circle.setAttributeNS(null, "stroke-width", "10");
+                circle.setAttributeNS(null, "stroke", "lightskyblue");
+                myField.append(circle);
+
+                lineHour.setAttributeNS(null, "x1", h / 2);
+                lineHour.setAttributeNS(null, "y1", w / 2);
+                lineHour.setAttributeNS(null, "x2", w / 3);
+                lineHour.setAttributeNS(null, "y2", h / 2);
+                lineHour.setAttributeNS(null, "stroke", "lightskyblue");
+                lineHour.setAttributeNS(null, "stroke-width", w / 50);
+                myField.append(lineHour);
+
+                lineMinute.setAttributeNS(null, "x1", h / 2);
+                lineMinute.setAttributeNS(null, "y1", w / 2);
+                lineMinute.setAttributeNS(null, "x2", w / 2);
+                lineMinute.setAttributeNS(null, "y2", h / 4);
+                lineMinute.setAttributeNS(null, "stroke", "lightskyblue");
+                lineMinute.setAttributeNS(null, "stroke-width", w / 75);
+                myField.append(lineMinute);
+
+                lineSecond.setAttributeNS(null, "x1", h / 2);
+                lineSecond.setAttributeNS(null, "y1", w / 2);
+                lineSecond.setAttributeNS(null, "x2", w / 2);
+                lineSecond.setAttributeNS(null, "y2", h / 1.4);
+                lineSecond.setAttributeNS(null, "stroke", "red");
+                lineSecond.setAttributeNS(null, "stroke-width", w / 200);
+                myField.append(lineSecond);
+
+                circleDote.setAttributeNS(null, "cx", w / 2);
+                circleDote.setAttributeNS(null, "cy", h / 2);
+                circleDote.setAttributeNS(null, "r", w > h ? h * 0.01 : w * 0.01);
+                circleDote.setAttributeNS(null, "fill", "none");
+                circleDote.setAttributeNS(null, "stroke-width", "10");
+                circleDote.setAttributeNS(null, "stroke", "lightskyblue");
+                myField.append(circleDote);
+
+                textStart.setAttribute("x", "20");
+                textStart.setAttribute("y", "25");
+                textStart.setAttribute("fill", "#000");
+                textStart.textContent = "Start";
+                myField.append(textStart);
+                textStop.setAttribute("x", "20");
+                textStop.setAttribute("y", "55");
+                textStop.setAttribute("fill", "#000");
+                textStop.textContent = "Stop";
+                myField.append(textStop);
+                textCity.setAttribute("x", "20");
+                textCity.setAttribute("y", "155");
+                textCity.setAttribute("fill", "#000");
+                textCity.textContent = cityName;
+                myField.append(textCity);
+            };
+
+            this.update = function (degSeconds, degMinutes, degHours) {
+                lineSecond.style.transform = `rotate(${degSeconds + 180}deg)`;
+                lineSecond.style.transformOrigin = `50% 50% 0`;
+                lineMinute.style.transform = `rotate(${degMinutes}deg)`;
+                lineMinute.style.transformOrigin = `50% 50% 0`;
+                lineHour.style.transform = `rotate(${degHours}deg)`;
+                lineHour.style.transformOrigin = `50% 50% 0`;
+            };
+        }
+
+        function ManViewWebPage() {
+            let myField = null; // внутри какого элемента DOM наша вёрстка
+            let clock = null;
+            let hour = null;
+            let minute = null;
+            let second = null;
+            let cityName = null;
+
+            this.init = function (container, city) {
+                myField = container;
+                cityName = city;
+                clock = myField.querySelector(".clock");
+                hour = myField.querySelector(".hourArrow");
+                minute = myField.querySelector(".minArrow");
+                second = myField.querySelector(".secondArrow");
+
+                this.nameCity(cityName);
+                this.draw();
+            };
+            this.nameCity = function (cityName) {
+                let callNameCity = document.createElement("div");
+                callNameCity.innerHTML = cityName;
+                myField.append(callNameCity);
+            };
+
+            this.draw = function () {
+                for (let i = 1; i <= 12; i++) {
+                    let bar = document.createElement("div");
+                    let num = document.createElement("div");
+                    let callNameCity = document.createElement("div");
+                    bar.className = "bar";
+                    num.className = "num";
+                    num.textContent = i;
+                    bar.appendChild(num);
+                    clock.appendChild(bar);
+                    bar.style.cssText = `transform: translateX(-50%) rotate(${i * 30}deg)`;
+                    num.style.cssText = `transform: rotate(-${i * 30}deg)`;
+                }
+            };
+
+            this.update = function (degSeconds, degMinutes, degHours) {
+                second.style.transform = `rotate(${degSeconds + 90}deg)`;
+                minute.style.transform = `rotate(${degMinutes + 90}deg)`;
+                hour.style.transform = `rotate(${degHours + 90}deg)`;
+            };
+        }
+        // model
+        function ManModel() {
+            let myView = null;
+            let timeId = null;
+            let gmtCurrent = null;
+
+            this.init = function (view, gmt) {
+                myView = view;
+                gmtCurrent = gmt;
+            };
+            this.startClock = function () {
+                let setTime = () => {
+                    let now = new Date();
+                    const seconds = now.getSeconds();
+                    let degSeconds = (seconds / 60) * 360;
+
+                    const minutes = now.getMinutes();
+                    let degMinutes = (minutes / 60) * 360;
+
+                    const hours = now.getHours() + gmtCurrent;
+                    let degHours = (hours % 12) * 30 + minutes * 0.5;
+                    myView.update(degSeconds, degMinutes, degHours);
+                };
+                timeId = setInterval(setTime, 1000);
+            };
+            this.stopClock = function () {
+                clearInterval(timeId);
+            };
+        }
+        function ManController() {
+            let myModel = null; // с какой моделью работаем
+            let myField = null; // внутри какого элемента DOM наша вёрстка
+
+            this.init = function (model, container) {
+                myModel = model;
+                myField = container;
+                // ищем и запоминаем интересующие нам элементы в DOM и назначаем обработчики событий
+                const btnStart = myField.querySelector("#start");
+                btnStart.addEventListener("click", this.start);
+                const btnStop = myField.querySelector("#stop");
+                btnStop.addEventListener("click", this.stop);
+            };
+
+            this.start = function () {
+                myModel.startClock(); // контроллер вызывает только методы модели
+            };
+            this.stop = function () {
+                myModel.stopClock(); // контроллер вызывает только методы модели
+            };
+        }
+        /*
+                          настройка, инициализация первого комплекта
+                        */
+
+        const clockModelCanvas = new ManModel();
+        const clockViewCanvas = new ManViewWebCanvas();
+        const clockControllerCanvas = new ManController();
+        // связываем компоненты друг с другом, указывая в каком контейнере/поле им работать
+        const clockContainerCanvas = {
+            container: document.getElementById("clockbox"),
+            gmt: -2,
+            city: "Warszawa"
+        };
+        clockModelCanvas.init(clockViewCanvas, clockContainerCanvas.gmt);
+        clockViewCanvas.init(clockContainerCanvas.container, clockContainerCanvas.city);
+        clockControllerCanvas.init(clockModelCanvas, clockContainerCanvas.container);
+
+        const clockModelCanvas2 = new ManModel();
+        const clockViewCanvas2 = new ManViewWebCanvas();
+        const clockControllerCanvas2 = new ManController();
+        // связываем компоненты друг с другом, указывая в каком контейнере/поле им работать
+        const clockContainerCanvas2 = {
+            container: document.getElementById("clockbox2"),
+            gmt: -1,
+            city: "Athens"
+        };
+        clockModelCanvas2.init(clockViewCanvas2, clockContainerCanvas2.gmt);
+        clockViewCanvas2.init(
+            clockContainerCanvas2.container,
+            clockContainerCanvas2.city
+        );
+        clockControllerCanvas2.init(clockModelCanvas2, clockContainerCanvas2.container);
+
+        /////////////////////////////
+
+        // // создаём все три компонента
+        const clockModelSVG = new ManModel();
+        const clockViewSVG = new ManViewWebSVG();
+        const clockControllerSVG = new ManController();
+        const clockContainerSVG = {
+            container: document.getElementById("svg2"),
+            gmt: 3,
+            city: "Minsk"
+        };
+        clockModelSVG.init(clockViewSVG, clockContainerSVG.gmt);
+        clockViewSVG.init(clockContainerSVG.container, clockContainerSVG.city);
+        clockControllerSVG.init(clockModelSVG, clockContainerSVG.container);
+        ////////////////////////////////////
+        const clockModelSVG2 = new ManModel();
+        const clockViewSVG2 = new ManViewWebSVG();
+        const clockControllerSVG2 = new ManController();
+        const clockContainerSVG2 = {
+            container: document.getElementById("svg3"),
+            gmt: -16,
+            city: "Honolulu"
+        };
+        clockModelSVG2.init(clockViewSVG2, clockContainerSVG2.gmt);
+        clockViewSVG2.init(clockContainerSVG2.container, clockContainerSVG2.city);
+        clockControllerSVG2.init(clockModelSVG2, clockContainerSVG2.container);
+
+        /////////////////////////////////
+
+        const clockModelDom = new ManModel();
+        const clockViewDom = new ManViewWebPage();
+        const clockControllerDom = new ManController();
+        // связываем компоненты друг с другом, указывая в каком контейнере/поле им работать
+        const clockContainer = {
+            container: document.getElementById("wrap1"),
+            gmt: +6,
+            city: "Tokyo"
+        };
+        clockModelDom.init(clockViewDom, clockContainer.gmt);
+        clockViewDom.init(clockContainer.container, clockContainer.city);
+        clockControllerDom.init(clockModelDom, clockContainer.container);
+        /////////////////////////////////
+
+        const clockModelDom2 = new ManModel();
+        const clockViewDom2 = new ManViewWebPage();
+        const clockControllerDom2 = new ManController();
+        // связываем компоненты друг с другом, указывая в каком контейнере/поле им работать
+        const clockContainer2 = {
+            container: document.getElementById("wrap2"),
+            gmt: -8,
+            city: "New York"
+        };
+        clockModelDom2.init(clockViewDom2, clockContainer2.gmt);
+        clockViewDom2.init(clockContainer2.container, clockContainer2.city);
+        clockControllerDom2.init(clockModelDom2, clockContainer2.container);
+
+    </script>
+</body>
+
+</html>

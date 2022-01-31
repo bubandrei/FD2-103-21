@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=\, initial-scale=1.0">
+    <title>drinks</title>
+</head>
+
+<body>
+    <button id='add'>Добавить</button>
+    <button id='get'>Рецепт</button>
+    <button id='remove'>Удалить</button>
+    <button id='viewAll'>Список рецептов</button>
+    <div id="wrap"></div>
+    <script>
+        class HashStorage {
+            constructor() {
+                this.store = {};
+            }
+            addValue(key, value) {
+                this.store[key] = value;
+            }
+            getValue(key) {
+                if (key in this.store) {
+                    return this.store[key];
+                }
+                return false;
+            }
+            removeValue(key) {
+                if (!(key in this.store)) {
+                    return false;
+                }
+                return delete this.store[key];
+            }
+            getKeys() {
+                return Object.keys(this.store);
+            }
+        }
+        const coctailsStorage = new HashStorage();
+
+        const addButton = document.getElementById("add");
+        const getButton = document.getElementById("get");
+        const removeButton = document.getElementById("remove");
+        const viewAllButton = document.getElementById("viewAll");
+
+        const coctail = Object.create(coctailsStorage);
+
+        let name = "";
+        let alcohol = "";
+        let ingredients = "";
+        let recipe = "";
+
+        addButton.onclick = function () {
+            name = prompt("Введите название коктеля");
+            alcohol = prompt("Напиток алкогольный?");
+            ingredients = prompt("Введите ингридиенты");
+            recipe = prompt("Введите рецепт приготовления");
+
+            coctail.addValue(name, { name, alcohol, ingredients, recipe });
+
+            wrap.innerHTML = `<h2>Коктейль "${name}" (алкогольный: ${alcohol})</h2>
+  <p>Необходимые ингридиенты: <li>${ingredients}</li></p>
+  <p>Рецепт приготовления: ${recipe}</p>`;
+        };
+
+        getButton.onclick = function () {
+            name = prompt("Введите название коктеля");
+            let currentRecipe = coctail.getValue(name);
+            if (coctail.getValue(name)) {
+                wrap.innerHTML = `<h2>Коктейль "${currentRecipe.name}" (алкогольный: ${currentRecipe.alcohol})</h2>
+  <p>Необходимые ингридиенты: <li>${currentRecipe.ingredients}</li></p>
+  <p>Рецепт приготовления: ${currentRecipe.recipe}</p>`;
+                console.log(coctail.getValue(name));
+            } else {
+                alert("Такого рецепта не существует!");
+            }
+        };
+
+        removeButton.onclick = function () {
+            const name = prompt("Введите название коктеля");
+            coctail.removeValue(name)
+                ? alert("Рецепт удален!")
+                : alert("Такого рецепта не существует!");
+        };
+
+        viewAllButton.onclick = function () {
+            wrap.innerHTML = `<h2>Список рецептов: ${coctail.getKeys()}</h2>`;
+            console.log(coctail.getKeys());
+        };
+
+    </script>
+</body>
+
+</html>

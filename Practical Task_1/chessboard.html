@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chessboard</title>
+</head>
+
+<body>
+    <script>
+        let chessBoard = '';
+        let white = "\u2B1C";
+        let black = "\u2B1B";
+        for (let i = 0; i < 8; i++) {
+
+            for (let j = 0; j < 8; j++) {
+                if ((i + j) % 2 == 0) {
+                    chessBoard = chessBoard + black;
+                }
+                else {
+                    chessBoard = chessBoard + white;
+                }
+            }
+            chessBoard += '\n';
+        }
+        console.log(chessBoard);
+        
+    </script>
+</body>
+
+</html>

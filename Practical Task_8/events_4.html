@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input data-length="5" placeholder="Введите 5 букв">
+    <input data-length="6" placeholder="Введите 6 букв">
+    <input data-length="7" placeholder="Введите 7 букв">
+    <input data-length="8" placeholder="Введите 8 букв">
+    <script>
+        let allInput = document.querySelectorAll("input");
+        for (let i = 0; i < allInput.length; i++) {
+            allInput[i].addEventListener("blur", function () {
+                let valueAttrib = this.getAttribute("data-length");
+                if (this.value.length == valueAttrib) {
+                    this.style.border = "2px solid green";
+                } else {
+                    this.style.border = "2px solid red";
+                }
+            });
+        }
+
+    </script>
+</body>
+
+</html>

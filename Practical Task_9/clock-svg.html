@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>clock-svg</title>
+</head>
+
+<body>
+    <script>
+        const svgNS = "http://www.w3.org/2000/svg";
+        const widthField = 500;
+        const degree = 30;
+        var currentDegree = 0;
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttributeNS(null, "width", widthField);
+        svg.setAttributeNS(null, "height", widthField);
+        svg.setAttributeNS(null, "id", "svg2");
+        document.body.append(svg);
+
+        function drawSVGElements() {
+            const svg = document.getElementById("svg2");
+            const w = parseFloat(svg.getAttributeNS(null, "width"));
+            const h = parseFloat(svg.getAttributeNS(null, "height"));
+
+            let circle = document.createElementNS(svgNS, "circle");
+
+            circle.setAttributeNS(null, "cx", w / 2);
+            circle.setAttributeNS(null, "cy", h / 2);
+            circle.setAttributeNS(null, "r", w > h ? h / 3 : w / 3);
+            circle.setAttributeNS(null, "fill", "none");
+            circle.setAttributeNS(null, "stroke-width", "10");
+            circle.setAttributeNS(null, "stroke", "lightskyblue");
+            svg.append(circle);
+
+            for (var i = 1; i <= 12; i++) {
+                currentDegree += degree;
+                var circleHours = document.createElementNS(svgNS, "circle");
+                var angleRadians = (parseFloat(currentDegree) / 180) * Math.PI;
+
+                circleHours.setAttributeNS(
+                    null,
+                    "cx",
+                    w / 2 + (w / 3.5) * Math.cos(angleRadians)
+                );
+                circleHours.setAttributeNS(
+                    null,
+                    "cy",
+                    h / 2 + (h / 3.5) * Math.sin(angleRadians)
+                );
+                circleHours.setAttributeNS(null, "r", w > h ? h * 0.03 : w * 0.03);
+                circleHours.setAttributeNS(null, "fill", "none");
+                circleHours.setAttributeNS(null, "stroke-width", "4");
+                circleHours.setAttributeNS(null, "stroke", "lightskyblue");
+
+                svg.append(circleHours);
+            }
+
+            for (var i = 1; i <= 12; i++) {
+                currentDegree += degree;
+                var numHours = document.createElementNS(svgNS, "text");
+                var angleRadians = (parseFloat(currentDegree - 90) / 180) * Math.PI;
+                numHours.setAttributeNS(
+                    null,
+                    "x",
+                    w / 2 + (w / 3.5) * Math.cos(angleRadians)
+                );
+                numHours.setAttributeNS(
+                    null,
+                    "y",
+                    h / 1.96 + (h / 3.5) * Math.sin(angleRadians)
+                );
+
+                numHours.setAttributeNS(null, "font-size", 15);
+                numHours.setAttributeNS(null, "text-anchor", "middle");
+                numHours.textContent = i;
+                svg.append(numHours);
+            }
+
+            var currentimes = document.createElementNS(svgNS, "text");
+            currentimes.setAttributeNS(null, "x", w / 2.45);
+            currentimes.setAttributeNS(null, "y", h / 2.8);
+            currentimes.setAttributeNS(null, "font-size", 25);
+
+            let lineHour = document.createElementNS(svgNS, "line");
+            lineHour.setAttributeNS(null, "x1", h / 2);
+            lineHour.setAttributeNS(null, "y1", w / 2);
+            lineHour.setAttributeNS(null, "x2", w / 3);
+            lineHour.setAttributeNS(null, "y2", h / 2);
+            lineHour.setAttributeNS(null, "stroke", "lightskyblue");
+            lineHour.setAttributeNS(null, "stroke-width", w / 50);
+            svg.append(lineHour);
+
+            let lineMinute = document.createElementNS(svgNS, "line");
+            lineMinute.setAttributeNS(null, "x1", h / 2);
+            lineMinute.setAttributeNS(null, "y1", w / 2);
+            lineMinute.setAttributeNS(null, "x2", w / 2);
+            lineMinute.setAttributeNS(null, "y2", h / 4);
+            lineMinute.setAttributeNS(null, "stroke", "lightskyblue");
+            lineMinute.setAttributeNS(null, "stroke-width", w / 75);
+            svg.append(lineMinute);
+
+            let lineSecond = document.createElementNS(svgNS, "line");
+            lineSecond.setAttributeNS(null, "x1", h / 2);
+            lineSecond.setAttributeNS(null, "y1", w / 2);
+            lineSecond.setAttributeNS(null, "x2", w / 3);
+            lineSecond.setAttributeNS(null, "y2", h / 1.4);
+            lineSecond.setAttributeNS(null, "stroke", "red");
+            lineSecond.setAttributeNS(null, "stroke-width", w / 200);
+            svg.append(lineSecond);
+
+            let circleDote = document.createElementNS(svgNS, "circle");
+            circleDote.setAttributeNS(null, "cx", w / 2);
+            circleDote.setAttributeNS(null, "cy", h / 2);
+            circleDote.setAttributeNS(null, "r", w > h ? h * 0.01 : w * 0.01);
+            circleDote.setAttributeNS(null, "fill", "none");
+            circleDote.setAttributeNS(null, "stroke-width", "10");
+            circleDote.setAttributeNS(null, "stroke", "lightskyblue");
+            svg.append(circleDote);
+
+            const setTime = () => {
+                let now = new Date();
+                var seconds = now.getSeconds();
+                let degSeconds = (seconds / 60) * 360 + 142;
+
+                lineSecond.style.transform = `rotate(${degSeconds}deg)`;
+                lineSecond.style.transformOrigin = `50% 50% 0`;
+
+                var minutes = now.getMinutes();
+                let degMinutes = (minutes / 60) * 360;
+                lineMinute.style.transform = `rotate(${degMinutes}deg)`;
+                lineMinute.style.transformOrigin = `50% 50% 0`;
+
+                var hours = now.getHours();
+                let degHours = (now.getHours() % 12) * 30 + 90 + minutes * 0.5;
+                lineHour.style.transform = `rotate(${degHours}deg)`;
+                lineHour.style.transformOrigin = `50% 50% 0`;
+
+                if (seconds < 10) {
+                    seconds = "0" + seconds;
+                }
+                if (minutes < 10) {
+                    minutes = "0" + minutes;
+                }
+                if (hours < 10) {
+                    hours = "0" + hours;
+                }
+                currentimes.textContent = hours + ":" + minutes + ":" + seconds;
+                svg.append(currentimes);
+            };
+
+            setInterval(setTime, 1000);
+        }
+        drawSVGElements();
+
+    </script>
+</body>
+
+</html>

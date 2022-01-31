@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ping-pong_DOM</title>
+    <style>
+        #IBall {
+            position: absolute;
+            background-color: red;
+            border-radius: 50%;
+            display: none;
+            color: #ffff99;
+        }
+
+        #field {
+            /*   width: 400px;
+  height: 300px; */
+            border: solid #696969 1px;
+            position: relative;
+            background-color: #ffff99;
+        }
+
+        #left {
+            position: relative;
+            width: 15px;
+            height: 60px;
+            background-color: green;
+            float: left;
+        }
+
+        #right {
+            position: absolute;
+            width: 15px;
+            height: 60px;
+            background-color: blue;
+        }
+
+        .count {
+            width: 20px;
+        }
+
+        #wrap {
+            display: flex;
+            width: 250px;
+            justify-content: space-around;
+            font-size: 45px;
+            height: 50px;
+        }
+
+        #countdown {
+            position: absolute;
+            left: 46%;
+            top: 25%;
+            font-weight: 900;
+            font-size: xxx-large;
+        }
+
+        #gameover {
+            position: absolute;
+            left: 35%;
+            top: 20%;
+            font-size: 20px;
+        }
+
+        button {
+            width: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <span id=wrap>
+        <button id="btn" onclick='start()'>Start</button>
+        <br /><br />
+    </span>
+    <div id='field'>
+        <div id="gameover"></div>
+        <div id="countdown"></div>
+        <span id='IBall'> </span>
+        <div id="left"></div>
+        <div id="right"></div>
+    </div>
+    <script>
+        const area = document.getElementById("field");
+        const ball = document.getElementById("IBall");
+        const wrap = document.getElementById("wrap");
+        const btn = document.getElementById("btn");
+        var countBlue = document.createElement("div");
+        var countGreen = document.createElement("div");
+        const countdownEl = document.querySelector("#countdown");
+        const gameOver = document.querySelector("#gameover");
+        var leftRacketTop = false;
+        var leftRacketBottom = false;
+        var rightRacketTop = false;
+        var rightRacketBottom = false;
+        let rAF;
+        var areaH = {
+            width: 400,
+            height: 300
+        };
+        area.style.width = areaH.width + "px";
+        area.style.height = areaH.height + "px";
+        var ballH = {
+            speedX: (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2),
+            speedY: (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2),
+            width: 10,
+            height: 10,
+            posX: areaH.width / 2 - 16,
+            posY: areaH.height / 2 - 16,
+            update: function () {
+                var ballElem = document.getElementById("IBall");
+                ballElem.style.left = this.posX + "px";
+                ballElem.style.top = this.posY + "px";
+            }
+        };
+        ball.style.width = ballH.width + "px";
+        ball.style.height = ballH.height + "px";
+        var racketR = {
+            width: 15,
+            height: 60,
+            posX: areaH.width - 15,
+            posY: areaH.height / 2.5,
+            score: 0,
+            update: function () {
+                var racketREl = document.getElementById("right");
+                racketREl.style.left = this.posX + "px";
+                racketREl.style.top = this.posY + "px";
+            }
+        };
+        racketR.update();
+        var racketL = {
+            width: 15,
+            height: 60,
+            posX: 0,
+            posY: areaH.height / 2.5,
+            score: 0,
+            update: function () {
+                var racketLEl = document.getElementById("left");
+                racketLEl.style.left = this.posX + "px";
+                racketLEl.style.top = this.posY + "px";
+            }
+        };
+        racketL.update();
+        window.addEventListener("keydown", moveRacket, false);
+        window.addEventListener("keyup", stopRacket, false);
+        function moveRacket(e) {
+            if (e.keyCode == 38) {
+                rightRacketTop = true;
+            } else if (e.keyCode == 40) {
+                rightRacketBottom = true;
+            } else if (e.keyCode == 17) {
+                leftRacketTop = true;
+            } else if (e.keyCode == 16) {
+                leftRacketBottom = true;
+            }
+        }
+        function stopRacket(e) {
+            if (e.keyCode == 38) {
+                rightRacketTop = false;
+            } else if (e.keyCode == 40) {
+                rightRacketBottom = false;
+            } else if (e.keyCode == 17) {
+                leftRacketTop = false;
+            } else if (e.keyCode == 16) {
+                leftRacketBottom = false;
+            }
+        }
+        function tick() {
+            ball.style.display = "inline-block";
+            ballH.posX += ballH.speedX;
+            ballH.posY += ballH.speedY;
+            if (
+                ballH.posX + ballH.width > areaH.width - racketR.width &&
+                ballH.posY > racketR.posY &&
+                ballH.posY < racketR.posY + 60
+            ) {
+                ballH.speedX = -ballH.speedX;
+            } else if (ballH.posX + ballH.width > areaH.width) {
+                ballH.speedX = 0;
+                ballH.speedY = 0;
+                ballH.posX = areaH.width - ballH.width;
+                racketR.score++;
+                start();
+            }
+            if (
+                ballH.posX < 15 &&
+                ballH.posY > racketL.posY &&
+                ballH.posY < racketL.posY + 60
+            ) {
+                ballH.speedX = -ballH.speedX;
+                ballH.posX = 15;
+            } else if (ballH.posX < 0) {
+                ballH.posX = 0;
+                ballH.speedX = 0;
+                ballH.speedY = 0;
+                racketL.score++;
+                start();
+            }
+            if (ballH.posY + ballH.height > areaH.height) {
+                ballH.speedY = -ballH.speedY;
+                ballH.posY = areaH.height - ballH.height;
+            }
+            if (ballH.posY < 0) {
+                ballH.speedY = -ballH.speedY;
+                ballH.posY = 0;
+            }
+            if (rightRacketBottom && racketR.posY < 240) {
+                racketR.posY += 5;
+                racketR.update();
+            }
+            if (rightRacketTop && racketR.posY > 0) {
+                racketR.posY -= 5;
+                racketR.update();
+            }
+            if (leftRacketTop && racketL.posY < 240) {
+                racketL.posY += 5;
+                racketL.update();
+            }
+            if (leftRacketBottom && racketL.posY > 0) {
+                racketL.posY -= 5;
+                racketL.update();
+            }
+            countBlue.className = "count";
+            countGreen.className = "count";
+            countGreen.innerHTML = racketL.score;
+            countBlue.innerHTML = racketR.score;
+            wrap.append(countGreen);
+            wrap.append(countBlue);
+            ballH.update();
+            rAF = requestAnimationFrame(tick);
+        }
+        function start() {
+            btn.disabled = true;
+            ball.style.display = "none";
+            if (racketL.score == 5 || racketR.score == 5) {
+                gameOver.append("Game over");
+                ballH.posX = areaH.width / 2 - 16;
+                ballH.posY = areaH.height / 2 - 16;
+                ballH.speedX = 0;
+                ballH.speedY = 0;
+            } else if (racketL.score < 5 || racketR.score < 5) {
+                var i = 3;
+                var timer = setInterval(function () {
+                    cancelAnimationFrame(rAF);
+                    ballH.posX = areaH.width / 2 - 16;
+                    ballH.posY = areaH.height / 2 - 16;
+                    ballH.speedX =
+                        (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2);
+                    ballH.speedY =
+                        (Math.random() < 0.5 ? -1 : 1) * (Math.random() * (3 - 2) + 2);
+                    countdownEl.style.display = "block";
+                    countdownEl.innerHTML = `${i}`;
+                    i--;
+                    if (i == -1) {
+                        clearInterval(timer);
+                        countdownEl.style.display = "none";
+                    }
+                }, 1000);
+                setTimeout(tick, 4000);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
